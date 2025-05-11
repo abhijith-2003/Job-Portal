@@ -13,6 +13,22 @@ import JobPage from './pages/job'
 import PostJob from './pages/post-job'
 import SavedJobs from './pages/saved-job'
 import MyJobs from './pages/my-jobs'
+import ResumeAnalyzer from './components/ResumeAnalyzer'
+
+const ErrorFallback = () => {
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen p-4">
+      <h1 className="text-2xl font-bold mb-4">Something went wrong</h1>
+      <p className="text-gray-600 mb-4">Please make sure you have set up your Gemini API key in the .env file</p>
+      <button
+        onClick={() => window.location.reload()}
+        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+      >
+        Try Again
+      </button>
+    </div>
+  )
+}
 
 const router = createBrowserRouter([
   {
@@ -69,6 +85,15 @@ const router = createBrowserRouter([
             <JobPage />
           </ProtectedRoute>
         ),
+      },
+      {
+        path: "/resume-checker",
+        element: (
+          <ProtectedRoute>
+            <ResumeAnalyzer />
+          </ProtectedRoute>
+        ),
+        errorElement: <ErrorFallback />
       },
     ]
   }

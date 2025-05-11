@@ -51,81 +51,115 @@ const JobPage = () => {
   }
 
   return (
-    <div className="flex flex-col gap-8 mt-5">
-      <div className="flex flex-col-reverse gap-6 md:flex-row justify-between items-center">
-        <h1 className="gradient-title font-extrabold pb-3 text-4xl sm:text-6xl">
-          {job?.title}
-        </h1>
-        <img src={job?.company?.logo_url} className="h-12" alt={job?.title} />
-      </div>
+    <div className="max-w-7xl mx-auto px-4 py-8 space-y-8">
+      <div className="bg-transparent rounded-3xl shadow-lg p-8 border border-gray-700">
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-3xl font-bold text-white">
+            {job?.title}
+          </h1>
+          <div className="flex items-center gap-3 px-3">
+            <img 
+              src={job?.company?.logo_url} 
+              className="h-20 w-20 object-contain rounded-xl" 
+              alt={job?.company?.name} 
+            />
+          </div>
+        </div>
 
-      <div className="flex justify-between ">
-        <div className="flex gap-2">
-          <MapPinIcon /> {job?.location}
-        </div>
-        <div className="flex gap-2">
-          <Briefcase /> {job?.applications?.length} Applicants
-        </div>
-        <div className="flex gap-2">
-          {job?.isOpen ? (
-            <>
-              <DoorOpen /> Open
-            </>
-          ) : (
-            <>
-              <DoorClosed /> Closed
-            </>
+        <div className="flex items-center justify-between">
+          <div className="flex gap-4 text-white">
+            <div className="flex items-center bg-gray-800 px-4 py-2 rounded-xl">
+              <MapPinIcon size={18} className="mr-2 text-blue-400" />
+              {job?.location}
+            </div>
+            <div className="flex items-center bg-gray-800 px-4 py-2 rounded-xl">
+              <Briefcase size={18} className="mr-2 text-blue-400" />
+              {job?.applications?.length} Applicants
+            </div>
+            <div className={`flex items-center px-4 py-2 rounded-xl ${
+              job?.isOpen 
+                ? "bg-teal-900 text-teal-200" 
+                : "bg-red-900 text-red-200"
+            }`}>
+              {job?.isOpen ? (
+                <>
+                  <DoorOpen size={18} className="mr-2" /> Open
+                </>
+              ) : (
+                <>
+                  <DoorClosed size={18} className="mr-2" /> Closed
+                </>
+              )}
+            </div>
+          </div>
+
+          {job?.recruiter_id !== user?.id && (
+            <ApplyJobDrawer
+              job={job}
+              user={user}
+              fetchJob={fnJob}
+              applied={job?.applications?.find((ap) => ap.candidate_id === user.id)}
+            />
           )}
         </div>
+
+        {job?.recruiter_id === user?.id && (
+          <div className="mt-6">
+            <Select onValueChange={handleStatusChange}>
+              <SelectTrigger
+                className={`w-full ${
+                  job?.isOpen 
+                    ? "bg-teal-900 text-teal-200 border-teal-700" 
+                    : "bg-red-900 text-red-200 border-red-700"
+                }`}
+              >
+                <SelectValue
+                  placeholder={
+                    "Hiring Status " + (job?.isOpen ? "( Open )" : "( Closed )")
+                  }
+                />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="open">Open</SelectItem>
+                <SelectItem value="closed">Closed</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        )}
       </div>
 
-      {job?.recruiter_id === user?.id && (
-        <Select onValueChange={handleStatusChange}>
-          <SelectTrigger
-            className={`w-full ${job?.isOpen ? "bg-green-950" : "bg-red-950"}`}
-          >
-            <SelectValue
-              placeholder={
-                "Hiring Status " + (job?.isOpen ? "( Open )" : "( Closed )")
-              }
-            />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="open">Open</SelectItem>
-            <SelectItem value="closed">Closed</SelectItem>
-          </SelectContent>
-        </Select>
-      )}
+      <div className="bg-transparent rounded-3xl shadow-lg p-8 border border-gray-700">
+        <h2 className="text-2xl font-bold text-white mb-4">About the job</h2>
+        <p className="text-gray-300 leading-relaxed">{job?.description}</p>
+      </div>
 
-      <h2 className="text-2xl sm:text-3xl font-bold">About the job</h2>
-      <p className="sm:text-lg">{job?.description}</p>
-
-      <h2 className="text-2xl sm:text-3xl font-bold">
-        What we are looking for
-      </h2>
-      <MDEditor.Markdown
-        source={job?.requirements}
-        className="bg-transparent sm:text-lg" // add global ul styles - tutorial
-      />
-      {job?.recruiter_id !== user?.id && (
-        <ApplyJobDrawer
-          job={job}
-          user={user}
-          fetchJob={fnJob}
-          applied={job?.applications?.find((ap) => ap.candidate_id === user.id)}
+      <div className="bg-transparent rounded-3xl shadow-lg p-8 border border-gray-700">
+        <h2 className="text-2xl font-bold text-white mb-4">Requirements</h2>
+        <MDEditor.Markdown
+          source={job?.requirements}
+          className="prose prose-invert max-w-none bg-transparent"
         />
-      )}
-      {loadingHiringStatus && <BarLoader width={"100%"} color="#36d7b7" />}
+      </div>
+
       {job?.applications?.length > 0 && job?.recruiter_id === user?.id && (
-        <div className="flex flex-col gap-2">
-          <h2 className="font-bold mb-4 text-xl ml-1">Applications</h2>
-          {job?.applications.map((application) => {
-            return (
-              <ApplicationCard key={application.id} application={application} />
-            );
-          })}
+        <div className="bg-transparent rounded-3xl shadow-lg p-8 border border-gray-700">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-2xl font-bold text-white">Applications</h2>
+            <div className="text-gray-400">
+              Total Applications: {job?.applications?.length}
+            </div>
+          </div>
+          <div className="grid gap-6">
+            {job?.applications.map((application) => (
+              <div key={application.id} className="bg-gray-900/50 rounded-2xl p-6 border border-gray-700 hover:border-gray-600 transition-all">
+                <ApplicationCard application={application} />
+              </div>
+            ))}
+          </div>
         </div>
       )}
+
+      {loadingHiringStatus && <BarLoader width={"100%"} color="#36d7b7" />}
     </div>
   );
 };

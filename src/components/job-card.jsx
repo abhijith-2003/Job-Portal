@@ -1,4 +1,4 @@
-import { Heart, MapPinIcon, Trash2Icon } from "lucide-react";
+import { Bookmark, MapPinIcon, Trash2Icon, Building2, Users, Calendar, DollarSign, Clock } from "lucide-react";
 import { Button } from "./ui/button";
 import {
   Card,
@@ -21,7 +21,6 @@ const JobCard = ({
   isMyJob = false,
 }) => {
   const [saved, setSaved] = useState(savedInit);
-
   const { user } = useUser();
 
   const { loading: loadingDeleteJob, fn: fnDeleteJob } = useFetch(deleteJob, {
@@ -52,53 +51,78 @@ const JobCard = ({
   }, [savedJob]);
 
   return (
-    <Card className="flex flex-col">
+    <Card className="flex flex-col bg-background border-input hover:border-input/80 transition-all duration-300 hover:shadow-[0_0_15px_rgba(59,130,246,0.3)] hover:-translate-y-1">
       {loadingDeleteJob && (
         <BarLoader className="mt-4" width={"100%"} color="#36d7b7" />
       )}
-      <CardHeader className="flex">
-        <CardTitle className="flex justify-between font-bold">
-          {job.title}
-          {isMyJob && (
-            <Trash2Icon
-              fill="red"
-              size={18}
-              className="text-red-300 cursor-pointer"
-              onClick={handleDeleteJob}
-            />
-          )}
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="flex flex-col gap-4 flex-1">
-        <div className="flex justify-between">
-          {job.company && <img src={job.company.logo_url} className="h-6" />}
-          <div className="flex gap-2 items-center">
-            <MapPinIcon size={15} /> {job.location}
+      <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
+        <div className="space-y-1">
+          <CardTitle className="text-xl font-bold text-white">
+            {job.title}
+          </CardTitle>
+          <div className="flex items-center gap-2 text-gray-400">
+            <Building2 size={16} className="text-blue-400" />
+            <span>{job.company?.name}</span>
           </div>
         </div>
-        <hr />
-        {job.description.substring(0, job.description.indexOf("."))}.
-      </CardContent>
-      <CardFooter className="flex gap-2">
-        <Link to={`/job/${job.id}`} className="flex-1">
-          <Button variant="secondary" className="w-full">
-            More Details
-          </Button>
-        </Link>
-        {!isMyJob && (
-          <Button
-            variant="outline"
-            className="w-15"
+        {isMyJob ? (
+          <button
+            onClick={handleDeleteJob}
+            className="p-2 bg-red-900/50 hover:bg-red-800/50 rounded-lg transition-all hover:scale-110 active:scale-95"
+          >
+            <Trash2Icon size={18} className="text-red-400" />
+          </button>
+        ) : (
+          <button
             onClick={handleSaveJob}
             disabled={loadingSavedJob}
+            className="p-2 bg-gray-700/50 hover:bg-gray-600/50 rounded-lg transition-all hover:scale-110 active:scale-95"
           >
-            {saved ? (
-              <Heart size={20} fill="red" stroke="red" />
-            ) : (
-              <Heart size={20} />
-            )}
-          </Button>
+            <Bookmark 
+              size={18} 
+              className={saved ? "text-red-400 fill-red-400" : "text-blue-400"} 
+            />
+          </button>
         )}
+      </CardHeader>
+      <CardContent className="flex flex-col gap-4 flex-1">
+        <div className="flex items-center justify-between text-gray-400">
+          <div className="flex items-center gap-2">
+            <MapPinIcon size={16} className="text-blue-400" />
+            <span>{job.location}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Calendar size={16} className="text-blue-400" />
+            <span> {new Date(job.created_at).toLocaleDateString()}</span>
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          {job.salary && (
+            <div className="flex items-center gap-2 text-gray-300">
+              <DollarSign size={16} className="text-blue-400" />
+              <span>{job.salary}</span>
+            </div>
+          )}
+          {job.type && (
+            <div className="flex items-center gap-2 text-gray-300">
+              <Clock size={16} className="text-blue-400" />
+              <span>{job.type}</span>
+            </div>
+          )}
+        </div>
+        <p className="text-gray-400 line-clamp-2">
+          {job.description.substring(0, job.description.indexOf("."))}.
+        </p>
+      </CardContent>
+      <CardFooter className="flex gap-2 pt-4 border-t border-input/50">
+        <Link to={`/job/${job.id}`} className="flex-1">
+          <Button 
+            variant="blue" 
+            className="w-full h-12 text-base font-medium bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 transition-all duration-300 hover:shadow-[0_0_15px_rgba(59,130,246,0.4)] hover:-translate-y-0.5 active:translate-y-0"
+          >
+            View Details
+          </Button>
+        </Link>
       </CardFooter>
     </Card>
   );
