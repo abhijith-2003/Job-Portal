@@ -154,7 +154,7 @@ const ResumeAnalyzer = () => {
           <Card className="p-8 shadow-lg hover:shadow-xl transition-shadow duration-300 bg-white/5 backdrop-blur-sm border border-gray-200/10">
             <div className="space-y-6">
               <div className="relative">
-                <label className="block text-sm font-medium mb-2 flex items-center">
+                <label className="text-sm font-medium mb-2 flex items-center">
                   <Upload className="w-5 h-5 mr-2" />
                   Upload Resume
                 </label>
@@ -174,7 +174,7 @@ const ResumeAnalyzer = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2 flex items-center">
+                <label className="text-sm font-medium mb-2 flex items-center">
                   <Briefcase className="w-5 h-5 mr-2" />
                   Job Description
                 </label>
